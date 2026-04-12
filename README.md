@@ -6,9 +6,11 @@
 [![Express](https://img.shields.io/badge/Express-5-lightgrey)](https://expressjs.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-5-blue)](https://www.prisma.io/)
 [![SQLite](https://img.shields.io/badge/SQLite-lightgrey)](https://www.sqlite.org/)
-[![Swagger](https://img.shields.io/badge/Swagger-Available-green)]
+![Swagger](https://img.shields.io/badge/Swagger-Available-green)
 
----
+<p align="left">
+  <a href="README.ru.md">Переключиться на русский язык</a>
+</p>
 
 ## 📋 About the Project
 
@@ -23,7 +25,6 @@ The project demonstrates:
 * Secure password handling (bcrypt)
 * Database management with Prisma ORM
 
----
 
 ## ⚙️ Features
 
@@ -35,9 +36,7 @@ The project demonstrates:
 * Role system (ADMIN / USER)
 * User activity status (active / blocked)
 
----
-
-## 📄 API Documentation (Swagger)
+## 📒 API Documentation (Swagger)
 
 Interactive API documentation is available via Swagger UI:
 
@@ -53,20 +52,16 @@ Features:
 
 How to use:
 * Open /docs
-* Click Authorize
+* Click Authorize (🔓)
 * Paste your JWT token:
 
 ```bash
-Bearer <your_token>
+Bearer <token>
 ```
 
 * Execute requests
 
----
-
 ## 🛠️ Tech Stack
-
-**Backend:**
 
 * Node.js
 * Express
@@ -76,7 +71,6 @@ Bearer <your_token>
 * JWT (jsonwebtoken)
 * bcrypt
 
----
 
 ## 🧱 Project Structure
 
@@ -97,7 +91,6 @@ prisma/<br>
 
 </details>
 
----
 
 ## 🚀 Getting Started
 
@@ -106,131 +99,97 @@ prisma/<br>
 * Node.js
 * npm
 
----
-
-### 1. Clone the repository
+#### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
----
+#### 2. Create an .env file from the example
 
-### 2. Install dependencies
+```bash
+copy .env.example .env
+```
+
+#### 3. Install dependencies
 
 ```bash
 npm install
 ```
 
----
-
-### 3. Apply database migrations
+#### 4. Apply database migrations
 
 ```bash
 npx prisma migrate dev
 ```
 
----
-
-### 4. Seed the database
-
-```bash
-npx prisma db seed
-```
-
----
-
-### 5. Start the server
+#### 5. Start the server
 
 ```bash
 npm run dev
 ```
 
----
-
-### Server will run at:
+#### Server will run at:
 
 ```bash
 http://localhost:3000
 ```
 
----
+## 👔 Default Admin User
 
-## 👤 Default Admin User
-
-After seeding:
+#### After seeding:
 
 ```bash
 email: admin@test.com
-password: admin123
+password: 123456
 ```
-
----
-
-## 🔐 Authentication
-
-The API uses JWT.
-
-Include token in headers:
-
-```bash
-Authorization: Bearer <your_token>
-```
-
----
 
 ## 📡 API Endpoints
 
-### 🔹 Auth
+### 🚪 Auth ###
 
-#### Register
+#### Register: ####
 
 ```bash
 POST /auth/register
 ```
 
-#### Login
+#### Login: ####
 
 ```bash
 POST /auth/login
 ```
 
----
+### 👥Users ###
 
-### 🔹 Users
-
-#### Get user by ID
+#### Get user by ID: ####
 
 ```bash
 GET /users/:id
 ```
 
-* Admin → any user
-* User → only themselves
+⚠️ The administrator can get any user's data<br>
+An ordinary user can only get their own data
 
----
-
-#### Get all users (Admin only)
+#### Get a list of all users: ####
 
 ```bash
 GET /users
 ```
 
----
+⚠️ Only the administrator can receive it
 
-#### Block user
+#### Block user: ####
 
 ```bash
 PATCH /users/:id/block
 ```
 
-* Admin → any user
-* User → themselves
+⚠️ The administrator can block any user<br>
+An ordinary user can only block himself
 
----
-
-## 🧠 Architecture Overview
+## 🧩 Architecture Overview
 
 Request flow:
 
@@ -242,16 +201,12 @@ Request → Route → Controller → Service → Prisma → Database
 * Services contain business logic
 * Prisma handles DB access
 
----
-
-## 🔒 Security
+## 🛡️ Security
 
 * Passwords are hashed using bcrypt
 * JWT authentication
 * Role-based access control
 * Sensitive data (password) is never returned
-
----
 
 ## 📞 Contact
 

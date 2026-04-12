@@ -6,9 +6,11 @@
 [![Express](https://img.shields.io/badge/Express-5-lightgrey)](https://expressjs.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-5-blue)](https://www.prisma.io/)
 [![SQLite](https://img.shields.io/badge/SQLite-lightgrey)](https://www.sqlite.org/)
-[![Swagger](https://img.shields.io/badge/Swagger-Available-green)]
+![Swagger](https://img.shields.io/badge/Swagger-Available-green)
 
----
+<p align="left">
+  <a href="README.md">Switch to English</a>
+</p>
 
 ## 📋 О проекте
 
@@ -23,7 +25,6 @@ User Service API — это backend-приложение для управлен
 * Безопасное хранение паролей (bcrypt)
 * Работу с базой данных через Prisma ORM
 
----
 
 ## ⚙️ Функциональность
 
@@ -35,9 +36,7 @@ User Service API — это backend-приложение для управлен
 * Система ролей (ADMIN / USER)
 * Статус пользователя (активен / заблокирован)
 
----
-
-📄 Документация API (Swagger)
+## 📒 Документация API (Swagger)
 
 Интерактивная документация API доступна через Swagger UI:
 
@@ -50,22 +49,19 @@ http://localhost:3000/docs
 * Тестирование запросов прямо в браузере
 * Авторизация через JWT
 * Просмотр схем запросов и ответов
+
 Как использовать:
-* Открой /docs
-* Нажми Authorize
-* Вставь JWT токен:
+* Открыть /docs
+* Нажать Authorize (🔓)
+* Вставить JWT токен:
 
 ```bash
-Bearer <your_token>
+Bearer <token>
 ```
 
-* Выполняй запросы
-
----
+* Выполнять запросы
 
 ## 🛠️ Технологии
-
-**Backend:**
 
 * Node.js
 * Express
@@ -75,7 +71,6 @@ Bearer <your_token>
 * JWT (jsonwebtoken)
 * bcrypt
 
----
 
 ## 🧱 Структура проекта
 
@@ -96,8 +91,6 @@ prisma/<br>
 
 </details>
 
----
-
 ## 🚀 Запуск проекта
 
 ### Требования
@@ -105,133 +98,100 @@ prisma/<br>
 * Node.js
 * npm
 
----
-
-### 1. Клонировать репозиторий
+#### 1. Клонируйте репозиторий
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
----
+#### 2. Создайте .env файл из примера
 
-### 2. Установить зависимости
+```bash
+copy .env.example .env
+```
+
+#### 3. Установите зависимости
 
 ```bash
 npm install
 ```
 
----
-
-### 3. Применить миграции
+#### 4. Примените миграции
 
 ```bash
 npx prisma migrate dev
 ```
 
----
-
-### 4. Заполнить базу данных (seed)
-
-```bash
-npx prisma db seed
-```
-
----
-
-### 5. Запустить сервер
+#### 5. Запустите сервер
 
 ```bash
 npm run dev
 ```
 
----
-
-### Сервер будет доступен по адресу:
+#### Сервер будет доступен по адресу:
 
 ```bash
 http://localhost:3000
 ```
 
----
 
-## 👤 Данные администратора
+## 👔 Данные администратора
 
-После выполнения seed:
+#### После выполнения seed:
 
 ```bash
 email: admin@test.com  
-password: admin123
+password: 123456
 ```
-
----
-
-## 🔐 Аутентификация
-
-API использует JWT.
-
-Передавайте токен в заголовке:
-
-```bash
-Authorization: Bearer <your_token>
-```
-
----
 
 ## 📡 API Endpoints
 
-### 🔹 Аутентификация
+### 🚪 Аутентификация ###
 
-#### Регистрация
+#### Регистрация: ####
 
 ```bash
 POST /auth/register
 ```
 
-#### Авторизация
+#### Авторизация: ####
 
 ```bash
 POST /auth/login
 ```
 
----
+### 👥 Пользователи ###
 
-### 🔹 Пользователи
-
-#### Получить пользователя по ID
+#### Получить пользователя по ID: ####
 
 ```bash
 GET /users/:id
 ```
 
-* Администратор → любой пользователь
-* Обычный пользователь → только себя
+⚠️ Администратор может получить данные любого пользователя<br>
+Обычный пользователь может получить только свои данные
 
----
-
-#### Получить список пользователей (только ADMIN)
+#### Получить список всех пользователей: ####
 
 ```bash
 GET /users
 ```
 
----
+⚠️ Получить может только администратор
 
-#### Заблокировать пользователя
+#### Заблокировать пользователя: ####
 
 ```bash
 PATCH /users/:id/block
 ```
 
-* Администратор → любого пользователя
-* Пользователь → самого себя
+⚠️ Администратор может заблокировать любого пользователя<br>
+Обычный пользователь может заблокировать только самого себя
 
----
+## 🧩 Архитектура
 
-## 🧠 Архитектура
-
-Поток обработки запроса:
+#### Поток обработки запроса:
 
 ```bash
 Request → Route → Controller → Service → Prisma → Database
@@ -241,18 +201,14 @@ Request → Route → Controller → Service → Prisma → Database
 * Service — содержит бизнес-логику
 * Prisma — взаимодействует с базой данных
 
----
-
-## 🔒 Безопасность
+## 🛡️ Безопасность
 
 * Пароли хешируются с помощью bcrypt
 * Используется JWT-аутентификация
 * Реализована ролевая модель доступа
 * Пароли не возвращаются в ответах API
 
----
-
-## 📞 Contact
+## 📞 Контакты
 
 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](birdcherrytea@gmail.com)</br>
 [![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/submarino_amarillo)</br>
