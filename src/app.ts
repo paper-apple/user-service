@@ -15,6 +15,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/", (req, res) => {
   res.send("API is working");
 });
+
 app.get("/me", authMiddleware, (req: any, res) => {
   res.json(req.user);
 });

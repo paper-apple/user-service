@@ -1,5 +1,10 @@
 import { Router } from "express";
 import { login, register } from "../controllers/auth.controller";
+import { validate } from "../middlewares/validate.middleware";
+import {
+  registerSchema,
+  loginSchema,
+} from "../schemas/auth.schema";
 
 export const authRouter = Router();
 
@@ -26,7 +31,11 @@ export const authRouter = Router();
  *       201:
  *         description: User created
  */
-authRouter.post("/register", register);
+authRouter.post(
+  "/register", 
+  validate(registerSchema),
+  register
+);
 
 /**
  * @swagger
@@ -48,4 +57,8 @@ authRouter.post("/register", register);
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
  */
-authRouter.post("/login", login);
+authRouter.post(
+  "/login", 
+  validate(loginSchema),
+  login
+);

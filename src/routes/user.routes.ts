@@ -6,6 +6,8 @@ import {
   getUsers,
   blockUser,
 } from "../controllers/user.controller";
+import { validate } from "../middlewares/validate.middleware";
+import { userIdSchema } from "../schemas/user.schema";
 
 export const userRouter = Router();
 
@@ -41,6 +43,7 @@ export const userRouter = Router();
 userRouter.get(
   "/:id",
   authMiddleware,
+  validate(userIdSchema, "params"),
   getUserById
 );
 
@@ -80,5 +83,6 @@ userRouter.get(
 userRouter.patch(
   "/:id/block",
   authMiddleware,
+  validate(userIdSchema, "params"),
   blockUser
 );
