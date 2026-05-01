@@ -4,6 +4,7 @@ import { authMiddleware } from "./middlewares/auth.middleware";
 import { userRouter } from "./routes/user.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
+import { AuthRequest } from "./types/express.types";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.get("/", (req, res) => {
   res.send("API is working");
 });
 
-app.get("/me", authMiddleware, (req: any, res) => {
+app.get("/me", authMiddleware, (req: AuthRequest, res) => {
   res.json(req.user);
 });
 

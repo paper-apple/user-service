@@ -1,9 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-
-export interface AuthRequest extends Request {
-  user?: any;
-}
+import { AuthRequest } from "../types/express.types";
+import { JwtPayload } from "../types/auth.types";
 
 export const authMiddleware = (
   req: AuthRequest,
@@ -19,12 +17,15 @@ export const authMiddleware = (
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecret');
+    const decoded = jwt.verify(
+      token, 
+      process.env.JWT_SECRET || 'supersecret'
+    ) as JwtPayload;
 
     req.user = decoded; // Adding payload to a request
 
     next();
-  } catch (error) {
+  } catch {
     res.status(401).json({ message: "Unauthorized" });
   }
 };

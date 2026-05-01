@@ -1,6 +1,7 @@
 import { prisma } from "../prisma/client";
+import { JwtPayload } from "../types/auth.types";
 
-export const getUserByIdService = async (id: number, currentUser: any) => {
+export const getUserByIdService = async (id: number, currentUser: JwtPayload) => {
   if (currentUser.role !== "ADMIN" && currentUser.userId !== id) {
     throw new Error("Access denied");
   }
@@ -34,7 +35,7 @@ export const getUsersService = async () => {
   });
 };
 
-export const blockUserService = async (id: number, currentUser: any) => {
+export const blockUserService = async (id: number, currentUser: JwtPayload) => {
   if (currentUser.role !== "ADMIN" && currentUser.userId !== id) {
     throw new Error("Access denied");
   }
