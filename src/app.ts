@@ -5,12 +5,17 @@ import { userRouter } from "./routes/user.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
 import { AuthRequest } from "./types/express.types";
+import { errorMiddleware } from "./middlewares/error.middleware";
 
 const app = express();
 
 app.use(express.json()); // Check headers and parse body as json (req.body)
+
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+
+app.use(errorMiddleware);
+
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { AppError } from "../utils/AppError";
 
 export const validate = (
   schema: z.ZodSchema,
@@ -16,18 +17,19 @@ export const validate = (
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          message: "Validation error",
-          errors: error.issues.map((issue) => ({
-            field: issue.path.join("."),
-            message: issue.message,
-          })),
-        });
+        return next(
+          new AppError(
+            "Validation error",
+            400,
+            error.issues.map((issue) => ({
+              field: issue.path.join("."),
+              message: issue.message,
+            }))
+          )
+        );
       }
 
-      return res.status(500).json({
-        message: "Internal server error",
-      });
+      next(error);
     }
   };
 };

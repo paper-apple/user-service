@@ -1,17 +1,16 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import {
   getUserByIdService,
   getUsersService,
   blockUserService,
 } from "../services/user.service";
 import { AuthRequest } from "../types/express.types";
+import { AppError } from "../utils/AppError";
 
-export const getUserById = async (req: AuthRequest, res: Response) => {
+export const getUserById = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
+      throw new AppError("Unauthorized", 401);
     }
 
     const userId = Number(req.params.id); // params = body
@@ -20,9 +19,7 @@ export const getUserById = async (req: AuthRequest, res: Response) => {
 
     res.json(result);
   } catch (error) {
-    res.status(403).json({
-      message: (error as Error).message,
-    });
+    next(error)
   }
 };
 
@@ -31,12 +28,10 @@ export const getUsers = async (req: AuthRequest, res: Response) => {
   res.json(users);
 };
 
-export const blockUser = async (req: AuthRequest, res: Response) => {
+export const blockUser = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
+      throw new AppError("Unauthorized", 401);
     }
 
     const userId = Number(req.params.id);
@@ -45,8 +40,6 @@ export const blockUser = async (req: AuthRequest, res: Response) => {
 
     res.json(result);
   } catch (error) {
-    res.status(403).json({
-      message: (error as Error).message,
-    });
+    next(error)
   }
 };

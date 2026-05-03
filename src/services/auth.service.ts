@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../prisma/client";
 import jwt from "jsonwebtoken";
+import { AppError } from "../utils/AppError";
 
 type RegisterDTO = {
   fullName: string;
@@ -15,7 +16,7 @@ export const registerUser = async (data: RegisterDTO) => {
   });
 
   if (existingUser) {
-    throw new Error("User already exists");
+    throw new AppError("User already exists", 409);
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -44,23 +45,23 @@ export const loginUser = async (email: string, password: string) => {
   });
 
   if (!user) {
-    throw new Error("Invalid credentials");
+    throw new AppError("Invalid credentials", 401);
   }
 
   if (!user.isActive) {
-    throw new Error("User is blocked");
+    throw new AppError("User is blocked", 403);
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throw new Error("Invalid credentials");
+    throw new AppError("Invalid credentials", 401);
   }
 
   const secret = process.env.JWT_SECRET;
 
   if (!secret) {
-    throw new Error("JWT_SECRET is required");
+    throw new AppError("JWT_SECRET is required", 500);
   }
 
   const token = jwt.sign(

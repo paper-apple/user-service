@@ -1,7 +1,8 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/express.types";
-import { JwtPayload } from "../types/auth.types";
+import { AppError } from "../utils/AppError";
+import { AuthJwtPayload } from "../types/auth.types";
 
 export const authMiddleware = (
   req: AuthRequest,
@@ -12,20 +13,27 @@ export const authMiddleware = (
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      throw new Error("No token");
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+      throw new AppError("JWT_SECRET is required", 500);
     }
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(
-      token, 
-      process.env.JWT_SECRET || 'supersecret'
-    ) as JwtPayload;
+    const decoded = jwt.verify(token, secret);
 
-    req.user = decoded; // Adding payload to a request
+    if (typeof decoded === "string") {
+      throw new AppError("Invalid token payload", 401);
+    }
+
+    req.user = decoded as AuthJwtPayload; // Adding payload to a request
 
     next();
-  } catch {
-    res.status(401).json({ message: "Unauthorized" });
+  } catch (error) {
+    next(error);
   }
 };

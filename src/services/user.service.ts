@@ -1,17 +1,28 @@
 import { prisma } from "../prisma/client";
-import { JwtPayload } from "../types/auth.types";
+import { AuthJwtPayload } from "../types/auth.types";
+import { AppError } from "../utils/AppError";
 
-export const getUserByIdService = async (id: number, currentUser: JwtPayload) => {
-  if (currentUser.role !== "ADMIN" && currentUser.userId !== id) {
-    throw new Error("Access denied");
+const checkUserAccess = (
+  targetUserId: number,
+  currentUser: AuthJwtPayload
+) => {
+  if (
+    currentUser.role !== "ADMIN" &&
+    currentUser.userId !== targetUserId
+  ) {
+    throw new AppError("Access denied", 403);
   }
+};
+
+export const getUserByIdService = async (id: number, currentUser: AuthJwtPayload) => {
+  checkUserAccess(id, currentUser);
 
   const user = await prisma.user.findUnique({
     where: { id },
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError("User not found", 404);
   }
 
   return {
@@ -35,10 +46,8 @@ export const getUsersService = async () => {
   });
 };
 
-export const blockUserService = async (id: number, currentUser: JwtPayload) => {
-  if (currentUser.role !== "ADMIN" && currentUser.userId !== id) {
-    throw new Error("Access denied");
-  }
+export const blockUserService = async (id: number, currentUser: AuthJwtPayload) => {
+  checkUserAccess(id, currentUser);
 
   return prisma.user.update({
     where: { id },
