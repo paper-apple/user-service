@@ -24,15 +24,22 @@ export const authMiddleware = (
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, secret);
+    try {
+      const decoded = jwt.verify(token, secret);
 
-    if (typeof decoded === "string") {
-      throw new AppError("Invalid token payload", 401);
+      if (typeof decoded === "string") {
+        return next(new AppError("Invalid token", 401));
+      }
+
+      req.user = decoded as AuthJwtPayload;
+      next();
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return next(new AppError("Token expired", 401));
+      }
+
+      return next(new AppError("Invalid token", 401));
     }
-
-    req.user = decoded as AuthJwtPayload; // Adding payload to a request
-
-    next();
   } catch (error) {
     next(error);
   }

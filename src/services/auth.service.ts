@@ -5,7 +5,7 @@ import { AppError } from "../utils/AppError";
 
 type RegisterDTO = {
   fullName: string;
-  birthDate: string;
+  birthDate: Date;
   email: string;
   password: string;
 };

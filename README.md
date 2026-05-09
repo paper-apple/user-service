@@ -23,7 +23,7 @@ The project demonstrates:
 * Authentication with JWT
 * Role-based access control (RBAC)
 * Secure password handling (bcrypt)
-* Database management with Prisma ORM
+* PostgreSQL management with Prisma ORM
 
 
 ## ⚙️ Features
@@ -67,7 +67,7 @@ Bearer <token>
 * Express
 * TypeScript
 * Prisma ORM
-* SQLite
+* PostgreSQL
 * JWT (jsonwebtoken)
 * bcrypt
 
@@ -92,48 +92,97 @@ prisma/<br>
 </details>
 
 
-## 🚀 Getting Started
+## 🖐️ Manual Project Setup
 
 ### Requirements
-
 * Node.js
 * npm
 
 #### 1. Clone the repository
-
 ```bash
 git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
-#### 2. Create an .env file from the example
-
+#### 2. Create an .env file from the example and modify the values if needed
 ```bash
 copy .env.example .env
 ```
 
 #### 3. Install dependencies
-
 ```bash
 npm install
 ```
 
 #### 4. Apply database migrations
-
 ```bash
-npx prisma migrate dev
+npx prisma migrate deploy
 ```
 
-#### 5. Start the server
+#### 5. Seed the database with test data (optional)
+```bash
+npx prisma db seed
+```
 
+#### 6. Start the server
 ```bash
 npm run dev
 ```
 
-#### Server will run at:
-
+#### The server will be available at:
 ```bash
 http://localhost:3000
+```
+
+#### You can inspect the database using Prisma Studio (If the server is already running, execute the command in a separate terminal)
+```bash
+npx prisma studio
+```
+
+## 🐳 Run with Docker
+
+### Requirements
+
+* [Docker](https://docker.com)
+* [Docker Compose](https://docs.docker.com/compose/)
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/paper-apple/user-service.git
+cd user-service
+```
+
+#### 2. Create an .env file from the example and modify the values if needed
+```bash
+copy .env.example .env
+```
+
+#### 3. Start Docker Desktop
+Wait until Docker is fully started (status: "Running")
+
+#### 4. Start the containers
+```bash
+docker compose up -d
+```
+
+#### 5. Apply database migrations
+```bash
+docker compose run --rm app npx prisma migrate deploy
+```
+
+#### 6. Seed the database with test data (optional)
+```bash
+docker compose exec app npx prisma db seed
+```
+
+#### The server will be available at:
+```bash
+http://localhost:3000
+```
+
+#### The server will be available at:
+```bash
+docker compose exec app npx prisma studio
 ```
 
 ## 👔 Default Admin User

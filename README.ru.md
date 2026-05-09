@@ -23,7 +23,7 @@ User Service API — это backend-приложение для управлен
 * Аутентификацию с использованием JWT
 * Ролевую модель доступа (RBAC)
 * Безопасное хранение паролей (bcrypt)
-* Работу с базой данных через Prisma ORM
+* Работу с PostgreSQL через Prisma ORM
 
 
 ## ⚙️ Функциональность
@@ -67,7 +67,7 @@ Bearer <token>
 * Express
 * TypeScript
 * Prisma ORM
-* SQLite
+* PostgreSQL
 * JWT (jsonwebtoken)
 * bcrypt
 
@@ -91,12 +91,59 @@ prisma/<br>
 
 </details>
 
-## 🚀 Запуск проекта
+## 🖐️ Ручной запуск проекта
+
+### Требования
+* Node.js
+* npm
+
+#### 1. Клонируйте репозиторий
+```bash
+git clone https://github.com/paper-apple/user-service.git
+cd user-service
+```
+
+#### 2. Создайте .env файл из примера и измените данные при надобности
+```bash
+copy .env.example .env
+```
+
+#### 3. Установите зависимости
+```bash
+npm install
+```
+
+#### 4. Примените миграции
+```bash
+npx prisma migrate deploy
+```
+
+#### 5. Загрузите тестовые данные (по желанию)
+```bash
+npx prisma db seed
+```
+
+#### 6. Запустите сервер
+```bash
+npm run dev
+```
+
+#### Сервер будет доступен по адресу:
+```bash
+http://localhost:3000
+```
+
+#### Вы можете просматривать содержимое БД используя prisma studio (если сервер уже запущен, выполняйте команду в отдельном терминале)
+```bash
+npx prisma studio
+```
+
+## 🐳 Запуск проекта через Docker
 
 ### Требования
 
-* Node.js
-* npm
+* [Docker](https://docker.com)
+* [Docker Compose](https://docs.docker.com/compose/)
 
 #### 1. Клонируйте репозиторий
 
@@ -105,41 +152,42 @@ git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
-#### 2. Создайте .env файл из примера
-
+#### 2. Создайте .env файл из примера и измените данные при надобности
 ```bash
 copy .env.example .env
 ```
 
-#### 3. Установите зависимости
+#### 3. Запустите Docker Desktop
+Дождитесь, пока Docker полностью запустится (статус "Running")
 
+#### 4. Запустите контейнеры
 ```bash
-npm install
+docker compose up -d
 ```
 
-#### 4. Примените миграции
-
+#### 5. Примените миграции
 ```bash
-npx prisma migrate dev
+docker compose run --rm app npx prisma migrate deploy
 ```
 
-#### 5. Запустите сервер
-
+#### 6. Загрузите тестовые данные (по желанию)
 ```bash
-npm run dev
+docker compose exec app npx prisma db seed
 ```
 
 #### Сервер будет доступен по адресу:
-
 ```bash
 http://localhost:3000
 ```
 
+#### Вы можете просматривать содержимое БД используя prisma studio
+```bash
+docker compose exec app npx prisma studio
+```
 
 ## 👔 Данные администратора
 
 #### После выполнения seed:
-
 ```bash
 email: admin@test.com  
 password: 123456
