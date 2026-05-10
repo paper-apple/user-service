@@ -5,6 +5,7 @@ import {
   registerSchema,
   loginSchema,
 } from "../schemas/auth.schema";
+import { authLimiter } from "../middlewares/rate-limit.middleware";
 
 export const authRouter = Router();
 
@@ -32,7 +33,8 @@ export const authRouter = Router();
  *         description: User created
  */
 authRouter.post(
-  "/register", 
+  "/register",
+  authLimiter,
   validate(registerSchema),
   register
 );
@@ -58,7 +60,8 @@ authRouter.post(
  *               $ref: '#/components/schemas/AuthResponse'
  */
 authRouter.post(
-  "/login", 
+  "/login",
+  authLimiter,
   validate(loginSchema),
   login
 );

@@ -6,8 +6,26 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
 import { AuthRequest } from "./types/express.types";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import helmet from "helmet";
+import cors from "cors";
+import { globalLimiter } from "./middlewares/rate-limit.middleware";
 
 const app = express();
+
+app.use(globalLimiter);
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false, // For Swagger UI
+  })
+);
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use(express.json()); // Check headers and parse body as json (req.body)
 
@@ -26,7 +44,9 @@ app.get("/me", authMiddleware, (req: AuthRequest, res) => {
   res.json(req.user);
 });
 
-app.listen(3000, () => {
-  console.log("Server started on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
 
