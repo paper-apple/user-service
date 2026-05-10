@@ -1,3 +1,4 @@
+import { checkAdminSelfBlock } from "../permissions/user.permissions";
 import { prisma } from "../prisma/client";
 import { AuthJwtPayload } from "../types/auth.types";
 import { AppError } from "../utils/AppError";
@@ -48,6 +49,7 @@ export const getUsersService = async () => {
 
 export const blockUserService = async (id: number, currentUser: AuthJwtPayload) => {
   checkUserAccess(id, currentUser);
+  checkAdminSelfBlock(id, currentUser);
 
   return prisma.user.update({
     where: { id },

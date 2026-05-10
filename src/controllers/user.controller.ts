@@ -19,7 +19,7 @@ export const getUserById = async (req: AuthRequest, res: Response, next: NextFun
 
     res.json(result);
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
@@ -40,6 +40,6 @@ export const blockUser = async (req: AuthRequest, res: Response, next: NextFunct
 
     res.json(result);
   } catch (error) {
-    next(error)
+    next(error);
   }
 };

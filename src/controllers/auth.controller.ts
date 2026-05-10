@@ -6,7 +6,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const user = await registerUser(req.body);
     res.status(201).json(user);
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
