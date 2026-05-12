@@ -21,6 +21,6 @@ export const checkAdminSelfBlock = (
   const isSelf = currentUser.userId === targetUserId;
 
   if (isAdmin && isSelf) {
-    throw new AppError("Admin cannot block themselves", 400);
+    throw new AppError("Admin cannot block himself", 403);
   }
 };

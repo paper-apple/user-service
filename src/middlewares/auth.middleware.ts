@@ -9,38 +9,35 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return next(new AppError("Unauthorized", 401));
+  }
+
+  const secret = process.env.JWT_SECRET;
+
+  if (!secret) {
+    return next(new AppError("JWT_SECRET is required", 500));
+  }
+
+  const [type, token] = authHeader.split(' ');
+
   try {
-    const authHeader = req.headers.authorization;
+    const decoded = jwt.verify(token, secret);
 
-    if (!authHeader) {
-      throw new AppError("Unauthorized", 401);
-    }
-
-    const secret = process.env.JWT_SECRET;
-
-    if (!secret) {
-      throw new AppError("JWT_SECRET is required", 500);
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    try {
-      const decoded = jwt.verify(token, secret);
-
-      if (typeof decoded === "string") {
-        return next(new AppError("Invalid token", 401));
-      }
-
-      req.user = decoded as AuthJwtPayload;
-      next();
-    } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
-        return next(new AppError("Token expired", 401));
-      }
-
+    if (typeof decoded === "string") {
       return next(new AppError("Invalid token", 401));
     }
+
+    req.user = decoded as AuthJwtPayload;
+
+    next();
   } catch (error) {
-    next(error);
+    if (error instanceof jwt.TokenExpiredError) {
+      return next(new AppError("Token expired", 401));
+    }
+
+    return next(new AppError("Invalid token", 401));
   }
 };

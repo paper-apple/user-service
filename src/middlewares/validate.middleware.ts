@@ -11,25 +11,22 @@ export const validate = (
     res: Response,
     next: NextFunction
   ) => {
-    try {
-      await schema.parseAsync(req[source]);
+    const result = await schema.safeParseAsync(req[source]);
 
-      next();
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return next(
-          new AppError(
-            "Validation error",
-            400,
-            error.issues.map((issue) => ({
-              field: issue.path.join("."),
-              message: issue.message,
-            }))
-          )
-        );
-      }
-
-      next(error);
+    if (!result.success) {
+      return next(
+        new AppError(
+          "Validation error",
+          400,
+          result.error.issues.map(issue => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          }))
+        )
+      );
     }
+
+    req.body = result.data;
+    next();
   };
 };

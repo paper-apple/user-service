@@ -1,19 +1,7 @@
-import { checkAdminSelfBlock } from "../permissions/user.permissions";
+import { checkAdminSelfBlock, checkUserAccess } from "../permissions/user.permissions";
 import { prisma } from "../prisma/client";
 import { AuthJwtPayload } from "../types/auth.types";
 import { AppError } from "../utils/AppError";
-
-const checkUserAccess = (
-  targetUserId: number,
-  currentUser: AuthJwtPayload
-) => {
-  if (
-    currentUser.role !== "ADMIN" &&
-    currentUser.userId !== targetUserId
-  ) {
-    throw new AppError("Access denied", 403);
-  }
-};
 
 export const getUserByIdService = async (id: number, currentUser: AuthJwtPayload) => {
   checkUserAccess(id, currentUser);
