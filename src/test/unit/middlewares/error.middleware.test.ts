@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response, NextFunction } from 'express';
-import { errorMiddleware } from '../../middlewares/error.middleware';
-import { AppError } from '../../utils/AppError';
+import { errorMiddleware } from '@/middlewares/error.middleware';
+import { AppError } from '@/utils/AppError';
 
 describe('Error Middleware', () => {
   let req: Partial<Request>;

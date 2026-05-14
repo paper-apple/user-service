@@ -5,8 +5,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5-lightgrey)](https://expressjs.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-5-blue)](https://www.prisma.io/)
-[![SQLite](https://img.shields.io/badge/SQLite-lightgrey)](https://www.sqlite.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-grey)](https://www.sqlite.org/)
 ![Swagger](https://img.shields.io/badge/Swagger-Available-green)
+
 
 <p align="left">
   <a href="README.md">Switch to English</a>
@@ -54,10 +55,10 @@ http://localhost:3000/docs
 * Открыть /docs
 * Нажать Authorize (🔓)
 * Вставить JWT токен:
+  ```bash
+    Bearer <token>
+  ```
 
-```bash
-Bearer <token>
-```
 
 * Выполнять запросы
 
@@ -70,6 +71,7 @@ Bearer <token>
 * PostgreSQL
 * JWT (jsonwebtoken)
 * bcrypt
+* Zod
 
 
 ## 🧱 Структура проекта
@@ -81,49 +83,53 @@ src/<br>
  ├── controllers/     # Обработка запросов<br>
  ├── services/        # Бизнес-логика<br>
  ├── routes/          # Роуты API<br>
- ├── middlewares/     # Проверка авторизации и ролей<br>
+ ├── middlewares/     # Проверка авторизации, ролей и обработка ошибок<br>
  ├── prisma/          # Prisma клиент<br>
- └── app.ts           # Точка входа<br>
+ ├── test/            # Тесты<br>
+ └── server.ts        # Точка входа<br>
 
 prisma/<br>
  ├── schema.prisma    # Схема БД<br>
+ ├── migrations/      # Автогенерируемые миграции<br>
  └── seed.ts          # Скрипт начальных данных<br>
 
 </details>
+
 
 ## 🖐️ Ручной запуск проекта
 
 ### Требования
 * Node.js
 * npm
+* PostgreSQL
 
-#### 1. Клонируйте репозиторий
+#### 1. Клонируйте репозиторий:
 ```bash
 git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
-#### 2. Создайте .env файл из примера и измените данные при надобности
+#### 2. Создайте .env файл из примера и измените данные при надобности:
 ```bash
 copy .env.example .env
 ```
 
-#### 3. Установите зависимости
+#### 3. Установите зависимости:
 ```bash
 npm install
 ```
 
-#### 4. Примените миграции
+#### 4. Примените миграции:
 ```bash
 npx prisma migrate deploy
 ```
 
-#### 5. Загрузите тестовые данные (по желанию)
+#### 5. Загрузите тестовые данные (по желанию):
 ```bash
 npx prisma db seed
 ```
 
-#### 6. Запустите сервер
+#### 6. Запустите сервер:
 ```bash
 npm run dev
 ```
@@ -133,44 +139,45 @@ npm run dev
 http://localhost:3000
 ```
 
-#### Вы можете просматривать содержимое БД используя prisma studio (если сервер уже запущен, выполняйте команду в отдельном терминале)
+#### Вы можете просматривать содержимое БД используя prisma studio (если сервер уже запущен, выполняйте команду в отдельном терминале. Убедитесь, что находитесь в папке 'user-service'):
 ```bash
 npx prisma studio
 ```
 
+
 ## 🐳 Запуск проекта через Docker
 
-### Требования
+### Требования:
 
 * [Docker](https://docker.com)
 * [Docker Compose](https://docs.docker.com/compose/)
 
-#### 1. Клонируйте репозиторий
+#### 1. Клонируйте репозиторий:
 
 ```bash
 git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
-#### 2. Создайте .env файл из примера и измените данные при надобности
+#### 2. Создайте .env файл из примера и измените данные при надобности:
 ```bash
 copy .env.example .env
 ```
 
-#### 3. Запустите Docker Desktop
+#### 3. Запустите Docker Desktop:
 Дождитесь, пока Docker полностью запустится (статус "Running")
 
-#### 4. Запустите контейнеры
+#### 4. Запустите контейнеры:
 ```bash
 docker compose up -d
 ```
 
-#### 5. Примените миграции
+#### 5. Примените миграции:
 ```bash
 docker compose run --rm app npx prisma migrate deploy
 ```
 
-#### 6. Загрузите тестовые данные (по желанию)
+#### 6. Загрузите тестовые данные (по желанию):
 ```bash
 docker compose exec app npx prisma db seed
 ```
@@ -180,7 +187,7 @@ docker compose exec app npx prisma db seed
 http://localhost:3000
 ```
 
-#### Вы можете просматривать содержимое БД используя prisma studio
+#### Вы можете просматривать содержимое БД используя prisma studio (если сервер уже запущен, выполняйте команду в отдельном терминале. Убедитесь, что находитесь в папке 'user-service'):
 ```bash
 docker compose exec app npx prisma studio
 ```
@@ -192,6 +199,7 @@ docker compose exec app npx prisma studio
 email: admin@test.com  
 password: 123456
 ```
+
 
 ## 📡 API Endpoints
 
@@ -209,7 +217,7 @@ POST /auth/register
 POST /auth/login
 ```
 
-### 👥 Пользователи ###
+### 👥 Пользователи
 
 #### Получить пользователя по ID: ####
 
@@ -220,7 +228,7 @@ GET /users/:id
 ⚠️ Администратор может получить данные любого пользователя<br>
 Обычный пользователь может получить только свои данные
 
-#### Получить список всех пользователей: ####
+#### Получить список всех пользователей:
 
 ```bash
 GET /users
@@ -228,26 +236,120 @@ GET /users
 
 ⚠️ Получить может только администратор
 
-#### Заблокировать пользователя: ####
+#### Заблокировать пользователя:
 
 ```bash
 PATCH /users/:id/block
 ```
 
-⚠️ Администратор может заблокировать любого пользователя<br>
+⚠️ Администратор может заблокировать любого пользователя, кроме самого себя<br>
 Обычный пользователь может заблокировать только самого себя
+
+
+## 🧪 Тестирование
+
+Проект включает систему тестирования, охватывающую ключевые сценарии работы API.
+
+Тесты делятся на два уровня: модульные и интеграционные, что позволяет проверять как отдельные функции, так и полный цикл запросов через HTTP.
+
+Для реализации тестирования использовались следующие инструменты:
+
+* Vitest — фреймворк для тестирования на базе Vite
+* Supertest — для отправки HTTP-запросов к Express-серверу
+* Prisma Client — прямое взаимодействие с БД в тестах
+* Factory-паттерн — создание предсказуемых тестовых данных
+
+⚠️ Перед запуском интеграционных тестов создаётся тестовая база данных. Проверьте файл .env и измените данные при надобности
+
+### Локальный запуск тестов
+
+#### Запуск unit-тестов:
+```bash
+npm run test:unit
+```
+
+#### Запуск интеграционных тестов:
+```bash
+npm run test:integration
+```
+
+### Запуск тестов в Docker
+
+#### Запуск unit-тестов:
+```bash
+docker compose run --rm test-unit
+```
+
+#### Запуск интеграционных тестов:
+```bash
+docker compose run --rm test-integration
+```
 
 ## 🧩 Архитектура
 
-#### Поток обработки запроса:
+### Поток обработки запроса:
 
 ```bash
-Request → Route → Controller → Service → Prisma → Database
+Request → Middleware → Route → Controller → Service → Prisma → Database
 ```
 
 * Controller — обрабатывает HTTP-запросы
 * Service — содержит бизнес-логику
 * Prisma — взаимодействует с базой данных
+
+### Валидация входных данных
+
+Все входные данные (регистрация, вход и т.д.) проходят строгую валидацию с помощью Zod:
+
+```ts
+const registerSchema = z.object({
+  fullName: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(6),
+  birthDate: z.string().date(),
+});
+```
+
+Преимущества:
+
+* Защита от невалидных или опасных данных
+* Автогенерация TypeScript-типов
+* Удобное чтение ошибок в ответах API
+
+### Защита на уровне HTTP
+
+API защищён на уровне входящих запросов с помощью следующих middleware:
+
+* Helmet<br>
+  Автоматически устанавливает безопасные HTTP-заголовки, отключает Cross-Origin-Resource-Policy для совместимости со Swagger UI
+
+* CORS<br>
+  Разрешает запросы только с доверенного фронтенда:
+  ```TypeScript
+  origin: process.env.CLIENT_URL, // например, http://localhost:5173
+  credentials: true
+  ```
+
+* Rate Limiting<br>
+  Ограничивает количество запросов с одного IP
+  Глобальный лимит: 100 запросов за 15 минут<br>
+  Для /auth: 5 попыток входа за 10 минут
+
+
+### Обработка ошибок
+
+Все ошибки в приложении перехватываются единым middleware — `errorMiddleware`. Он гарантирует:
+
+* Единый формат ответов об ошибках:
+  ```json
+  {
+    "error": "Invalid credentials",
+    "details": null
+  }
+* Корректные HTTP-статусы (400, 401, 403, 500 и др.)
+* Защиту от утечки внутренних деталей (стека, путей, имён переменных)
+* Поддержку кастомных ошибок через AppError
+
 
 ## 🛡️ Безопасность
 
@@ -255,6 +357,12 @@ Request → Route → Controller → Service → Prisma → Database
 * Используется JWT-аутентификация
 * Реализована ролевая модель доступа
 * Пароли не возвращаются в ответах API
+* Входные данные валидируются с помощью Zod
+* Ошибки централизованно обрабатываются через middleware
+* Защита от XSS, заголовков и других атак — через Helmet
+* Контроль доступа по CORS: разрешены только доверенные домены
+* Ограничение частоты запросов (rate limiting)
+
 
 ## 📞 Контакты
 

@@ -31,6 +31,12 @@ app.use(express.json()); // Check headers and parse body as json (req.body)
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.get("/me", authMiddleware, (req: AuthRequest, res) => {
+  res.json(req.user);
+});
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 app.use(errorMiddleware);
 
@@ -40,13 +46,4 @@ app.get("/", (req, res) => {
   res.send("API is working");
 });
 
-app.get("/me", authMiddleware, (req: AuthRequest, res) => {
-  res.json(req.user);
-});
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
-
+export default app;

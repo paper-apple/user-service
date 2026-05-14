@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../middlewares/validate.middleware';
+import { validate } from '@/middlewares/validate.middleware';
 
 describe('Validate Middleware', () => {
   let req: Partial<Request>;
@@ -20,7 +20,7 @@ describe('Validate Middleware', () => {
     });
 
     req.body = {
-      name: 'John',
+      name: 'Gary',
     };
 
     const middleware = validate(schema);

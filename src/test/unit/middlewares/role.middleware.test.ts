@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Response, NextFunction } from 'express';
-import { roleMiddleware } from '../../middlewares/role.middleware';
-import { AuthRequest } from '../../types/express.types';
-import { AppError } from '../../utils/AppError';
+import { roleMiddleware } from '@/middlewares/role.middleware';
+import { AuthRequest } from '@/types/express.types';
 
 describe('Role Middleware', () => {
   let req: Partial<AuthRequest>;

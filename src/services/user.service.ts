@@ -39,6 +39,18 @@ export const blockUserService = async (id: number, currentUser: AuthJwtPayload) 
   checkUserAccess(id, currentUser);
   checkAdminSelfBlock(id, currentUser);
 
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (!user.isActive) {
+    throw new AppError("User is already blocked", 409);
+  }
+
   return prisma.user.update({
     where: { id },
     data: { isActive: false },

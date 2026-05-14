@@ -5,12 +5,13 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5-lightgrey)](https://expressjs.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-5-blue)](https://www.prisma.io/)
-[![SQLite](https://img.shields.io/badge/SQLite-lightgrey)](https://www.sqlite.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-grey)](https://www.sqlite.org/)
 ![Swagger](https://img.shields.io/badge/Swagger-Available-green)
 
 <p align="left">
   <a href="README.ru.md">Переключиться на русский язык</a>
 </p>
+
 
 ## 📋 About the Project
 
@@ -20,21 +21,22 @@ The project demonstrates:
 
 * Modular architecture (Controller → Service → DB)
 * REST API design
-* Authentication with JWT
+* JWT-based authentication
 * Role-based access control (RBAC)
 * Secure password handling (bcrypt)
-* PostgreSQL management with Prisma ORM
+* Working with PostgreSQL via Prisma ORM
 
 
 ## ⚙️ Features
 
 * User registration
-* User authentication (JWT)
-* Get user by ID (self or admin)
+* User login (JWT)
+* Get user by ID (user or admin)
 * Get list of users (admin only)
-* Block user (self or admin)
+* Block/unblock user (self or admin)
 * Role system (ADMIN / USER)
-* User activity status (active / blocked)
+* User status (active / blocked)
+
 
 ## 📒 API Documentation (Swagger)
 
@@ -47,19 +49,20 @@ http://localhost:3000/docs
 Features:
 * Explore all available endpoints
 * Test requests directly in the browser
-* Authorize using JWT token
-* View request/response schemas
+* Authenticate using JWT
+* View request and response schemas
 
 How to use:
 * Open /docs
 * Click Authorize (🔓)
-* Paste your JWT token:
+* Insert JWT token:
 
 ```bash
 Bearer <token>
 ```
 
 * Execute requests
+
 
 ## 🛠️ Tech Stack
 
@@ -70,6 +73,7 @@ Bearer <token>
 * PostgreSQL
 * JWT (jsonwebtoken)
 * bcrypt
+* Zod
 
 
 ## 🧱 Project Structure
@@ -78,16 +82,18 @@ Bearer <token>
 <summary>Click to expand</summary>
 
 src/<br>
- ├── controllers/     # Request handling<br>
- ├── services/        # Business logic<br>
- ├── routes/          # API routes<br>
- ├── middlewares/     # Auth & role checks<br>
- ├── prisma/          # Prisma client<br>
- └── app.ts           # Entry point<br>
+├── controllers/     # Request handlers<br>
+├── services/        # Business logic<br>
+├── routes/          # API routes<br>
+├── middlewares/     # Authentication, authorization, error handling<br>
+├── prisma/          # Prisma client<br>
+├── test/            # Tests<br>
+└── server.ts        # Entry point<br>
 
 prisma/<br>
- ├── schema.prisma    # DB schema<br>
- └── seed.ts          # Seed script<br>
+├── schema.prisma    # Database schema<br>
+├── migrations/      # Auto-generated migrations<br>
+└── seed.ts          # Initial data script<br>
 
 </details>
 
@@ -97,34 +103,35 @@ prisma/<br>
 ### Requirements
 * Node.js
 * npm
+* PostgreSQL
 
-#### 1. Clone the repository
+#### 1. Clone the repository:
 ```bash
 git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
-#### 2. Create an .env file from the example and modify the values if needed
+#### 2. Create .env file from example and adjust values if needed:
 ```bash
 copy .env.example .env
 ```
 
-#### 3. Install dependencies
+#### 3. Install dependencies:
 ```bash
 npm install
 ```
 
-#### 4. Apply database migrations
+#### 4. Apply database migrations:
 ```bash
 npx prisma migrate deploy
 ```
 
-#### 5. Seed the database with test data (optional)
+#### 5. Seed test data (optional):
 ```bash
 npx prisma db seed
 ```
 
-#### 6. Start the server
+#### 6. Start the server:
 ```bash
 npm run dev
 ```
@@ -134,10 +141,11 @@ npm run dev
 http://localhost:3000
 ```
 
-#### You can inspect the database using Prisma Studio (If the server is already running, execute the command in a separate terminal)
+#### You can view the database content using Prisma Studio (run in a separate terminal if the server is already running. Make sure that you are in the 'user-service' folder):
 ```bash
 npx prisma studio
 ```
+
 
 ## 🐳 Run with Docker
 
@@ -146,31 +154,31 @@ npx prisma studio
 * [Docker](https://docker.com)
 * [Docker Compose](https://docs.docker.com/compose/)
 
-#### 1. Clone the repository
+#### 1. Clone the repository:
 ```bash
 git clone https://github.com/paper-apple/user-service.git
 cd user-service
 ```
 
-#### 2. Create an .env file from the example and modify the values if needed
+#### 2. Create .env file from example and adjust values if needed:
 ```bash
 copy .env.example .env
 ```
 
-#### 3. Start Docker Desktop
-Wait until Docker is fully started (status: "Running")
+#### 3. Launch Docker Desktop:
+Wait until Docker starts completely (status "Running")
 
-#### 4. Start the containers
+#### 4. Start containers:
 ```bash
 docker compose up -d
 ```
 
-#### 5. Apply database migrations
+#### 5. Apply database migrations:
 ```bash
 docker compose run --rm app npx prisma migrate deploy
 ```
 
-#### 6. Seed the database with test data (optional)
+#### 6. Seed test data (optional):
 ```bash
 docker compose exec app npx prisma db seed
 ```
@@ -180,12 +188,13 @@ docker compose exec app npx prisma db seed
 http://localhost:3000
 ```
 
-#### The server will be available at:
+#### You can view the database content using Prisma Studio (run in a separate terminal if the server is already running. Make sure that you are in the 'user-service' folder):
 ```bash
 docker compose exec app npx prisma studio
 ```
 
-## 👔 Default Admin User
+
+## 👔 Admin Credentials
 
 #### After seeding:
 
@@ -194,11 +203,12 @@ email: admin@test.com
 password: 123456
 ```
 
+
 ## 📡 API Endpoints
 
-### 🚪 Auth ###
+### 🚪 Authentication ###
 
-#### Register: ####
+#### Registration: ####
 
 ```bash
 POST /auth/register
@@ -218,16 +228,16 @@ POST /auth/login
 GET /users/:id
 ```
 
-⚠️ The administrator can get any user's data<br>
-An ordinary user can only get their own data
+⚠️ Admin can get any user's data<br>
+Regular user can get only their own data
 
-#### Get a list of all users: ####
+#### Get all users: ####
 
 ```bash
 GET /users
 ```
 
-⚠️ Only the administrator can receive it
+⚠️ Only admin can access this endpoint
 
 #### Block user: ####
 
@@ -235,27 +245,128 @@ GET /users
 PATCH /users/:id/block
 ```
 
-⚠️ The administrator can block any user<br>
-An ordinary user can only block himself
+⚠️ Admin can block any user except themselves<br>
+Regular user can block only themselves
+
+
+## 🧪 Testing
+The project includes a testing system covering key API scenarios.
+
+Tests are divided into two levels: unit and integration, allowing verification of both individual functions and full HTTP request cycles.
+
+The following tools were used for testing:
+
+* Vitest — testing framework based on Vite
+* Supertest — sending HTTP requests to the Express server
+* Prisma Client — direct interaction with the database in tests
+* Factory pattern — creating predictable test data
+
+⚠️ A test database is created before running integration tests. Please check the .env file and adjust values if needed.
+
+### Running tests locally
+
+#### Run unit tests:
+```Bash
+npm run test:unit
+```
+
+#### Run integration tests:
+```Bash
+npm run test:integration
+```
+
+### Running tests in Docker
+
+#### Run unit tests:
+```Bash
+docker compose run --rm test-unit
+```
+
+#### Run integration tests:
+```Bash
+docker compose run --rm test-integration
+```
 
 ## 🧩 Architecture Overview
 
-Request flow:
+### Request processing flow:
 
 ```bash
-Request → Route → Controller → Service → Prisma → Database
+Request → Middleware → Route → Controller → Service → Prisma → Database
 ```
 
 * Controllers handle HTTP layer
 * Services contain business logic
 * Prisma handles DB access
 
+### Input Validation
+
+All input data (registration, login, etc.) is strictly validated using Zod:
+
+```TypeScript
+const registerSchema = z.object({
+  fullName: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(6),
+  birthDate: z.string().date(),
+});
+```
+
+Advantages:
+
+* Protection against invalid or dangerous data
+* Automatic TypeScript type generation
+* Clear error messages in API responses
+
+### HTTP-Level Protection
+
+The API is protected at the incoming request level with the following middleware:
+
+
+* Helmet<br>
+  Automatically sets secure HTTP headers, disables Cross-Origin-Resource-Policy for Swagger UI compatibility
+
+* CORS<br>
+  Allows requests only from trusted frontend:
+  ```TypeScript
+  origin: process.env.CLIENT_URL, // e.g., http://localhost:5173
+  credentials: true
+  ```
+
+* Rate Limiting<br>
+  Limits the number of requests from a single IP
+  Global limit: 100 requests per 15 minutes<br>
+  For /auth: 5 login attempts per 10 minutes
+
+### Error Handling
+
+All errors in the application are caught by a single middleware — errorMiddleware. It ensures:
+
+* Unified error response format:
+  ```JSON
+  {
+    "error": "Invalid credentials",
+    "details": null
+  }
+  ```
+
+* Correct HTTP statuses (400, 401, 403, 500, etc.)
+* Protection against leaking internal details (stack traces, paths, variable names)
+* Support for custom errors via AppError
+
+
 ## 🛡️ Security
 
 * Passwords are hashed using bcrypt
-* JWT authentication
-* Role-based access control
-* Sensitive data (password) is never returned
+* JWT authentication is used
+* Role-based access control is implemented
+* Passwords are not returned in API responses
+* Input data is validated using Zod
+* Errors are centrally handled via middleware
+* Protection against XSS, header attacks, and others via Helmet
+* CORS restricts access to trusted domains only
+* Rate limiting prevents brute-force and DDoS attacks
+
 
 ## 📞 Contact
 

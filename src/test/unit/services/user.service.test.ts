@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { User } from '@prisma/client';
-import { prisma } from '../../prisma/client';
-import { getUserByIdService, getUsersService, blockUserService } from '../../services/user.service';
-import { AuthJwtPayload } from '../../types/auth.types';
+import { prisma } from '@/prisma/client';
+import { getUserByIdService, getUsersService, blockUserService } from '../../../services/user.service';
+import { AuthJwtPayload } from '@/types/auth.types';
 
-vi.mock('../../prisma/client', () => ({
+vi.mock('@/prisma/client', () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
@@ -116,6 +116,7 @@ describe('User Service', () => {
 
   describe('blockUserService', () => {
     it('should allow user to block himself', async () => {
+      (prisma.user.findUnique as Mock).mockResolvedValue(mockUser);
       (prisma.user.update as Mock).mockResolvedValue({
         ...mockUser,
         isActive: false,
@@ -123,6 +124,7 @@ describe('User Service', () => {
 
       const result = await blockUserService(1, regularUser);
 
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { isActive: false },
@@ -132,6 +134,7 @@ describe('User Service', () => {
     });
 
     it('should allow admin to block another user', async () => {
+      (prisma.user.findUnique as Mock).mockResolvedValue(mockUser);
       (prisma.user.update as Mock).mockResolvedValue({
         ...mockUser,
         isActive: false,
@@ -139,6 +142,7 @@ describe('User Service', () => {
 
       const result = await blockUserService(1, adminUser);
 
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
       expect(result.isActive).toBe(false);
     });
 
@@ -150,15 +154,46 @@ describe('User Service', () => {
         status: 403,
       });
 
+      expect(prisma.user.findUnique).not.toHaveBeenCalled();
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
     it('should throw if admin tries to block himself', async () => {
+      (prisma.user.findUnique as Mock).mockResolvedValue(mockUser);
+
       const result = blockUserService(999, adminUser);
 
       await expect(result).rejects.toMatchObject({
         message: 'Admin cannot block himself',
         status: 403,
+      });
+
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw 404 if user does not exist', async () => {
+      (prisma.user.findUnique as Mock).mockResolvedValue(null);
+
+      const result = blockUserService(1, adminUser);
+
+      await expect(result).rejects.toMatchObject({
+        message: 'User not found',
+        status: 404,
+      });
+
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw 409 if user is already blocked', async () => {
+      const blockedUser = { ...mockUser, isActive: false };
+
+      (prisma.user.findUnique as Mock).mockResolvedValue(blockedUser);
+
+      const result = blockUserService(1, adminUser);
+
+      await expect(result).rejects.toMatchObject({
+        message: 'User is already blocked',
+        status: 409,
       });
 
       expect(prisma.user.update).not.toHaveBeenCalled();

@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { prisma } from '../../prisma/client';
+import { prisma } from '@/prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { registerUser, loginUser } from '../../services/auth.service';
+import { registerUser, loginUser } from '@/services/auth.service';
 import { User } from '@prisma/client';
 
 vi.mock('bcrypt');
 vi.mock('jsonwebtoken');
-vi.mock('../../prisma/client', () => ({
+vi.mock('@/prisma/client', () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
@@ -152,9 +152,6 @@ describe('Auth Service', () => {
     });
 
     it('should throw error if JWT_SECRET is not configured', async () => {
-      const email = 'john@example.com';
-      const password = 'password123';
-
       (prisma.user.findUnique as any).mockResolvedValue(mockUser);
       (bcrypt.compare as any).mockResolvedValue(true);
       delete process.env.JWT_SECRET;

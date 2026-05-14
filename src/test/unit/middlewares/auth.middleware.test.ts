@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { authMiddleware } from '../../middlewares/auth.middleware';
-import { AuthRequest } from '../../types/express.types';
-import { AuthJwtPayload } from '../../types/auth.types';
+import { authMiddleware } from '@/middlewares/auth.middleware';
+import { AuthRequest } from '@/types/express.types';
+import { AuthJwtPayload } from '@/types/auth.types';
 
 vi.mock('jsonwebtoken', () => ({
   default: {

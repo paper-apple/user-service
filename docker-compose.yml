@@ -2,12 +2,12 @@ services:
   app:
     build: .
     ports:
-      - "${PORT}:3000"
+      - "${APP_PORT}:3000"
       - "5555:5555" # prisma studio
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
     depends_on:
       postgres:
         condition: service_healthy
@@ -27,3 +27,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  test-unit:
+    build: .
+    container_name: user-service-test-unit
+    command: npm run test:unit
+
+  test-integration:
+    build: .
+    container_name: user-service-test-integration
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_TEST_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run test:integration
